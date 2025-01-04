@@ -6,6 +6,8 @@ yarn-error.log*
 package-lock.json
 yarn.lock
 .npm
+.pnpm-debug.log*
+.node_repl_history
 
 # Environment variables
 .env
@@ -16,11 +18,15 @@ yarn.lock
 .env.development.local
 .env.test.local
 .env.production.local
+.env.deploy
 
 # Docker
 .docker/
 docker-compose.override.yml
 *.env
+docker-compose.override.yaml
+docker-compose.*.local.yml
+docker-compose.*.local.yaml
 
 # IDE and editors
 .idea/
@@ -34,45 +40,44 @@ docker-compose.override.yml
 .classpath
 .settings/
 *.code-workspace
+.history/
+*.iml
+.vim/
 
-# Logs
-logs/
-*.log
-
-# Build output
+# Build and deployment
 dist/
 build/
 out/
 .next/
 .nuxt/
 .cache/
+deploy/ssl/*
+deploy/secrets/*
+deploy/certificates/*
+deploy/keys/*
+!deploy/ssl/.gitkeep
+!deploy/secrets/.gitkeep
 
-# Testing
+# Testing and coverage
 coverage/
 .nyc_output/
 junit.xml
 test-report/
+.jest-*
+cypress/videos/
+cypress/screenshots/
+reports/
 
-# Temporary files
-tmp/
-temp/
-.temp/
-.tmp/
-
-# Database
-*.sqlite
-*.sqlite3
-*.db
-dump.rdb
-
-# Operating System
-.DS_Store
-Thumbs.db
-desktop.ini
-*.swp
-*.bak
-*.tmp
-*~
+# Logs and debugging
+logs/
+*.log
+debug/
+.debug/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+.clinic/
 
 # Service specific
 services/**/dist/
@@ -81,13 +86,41 @@ services/**/coverage/
 services/**/.env
 services/**/.env.*
 !services/**/.env.example
+services/**/logs/
+services/**/*.log
+services/**/temp/
+services/**/.clinic/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+dump.rdb
+*.sql
+*.bak.sql
+postgres-data/
+mongodb-data/
+redis-data/
 
 # Dependency directories
 **/node_modules/
 **/jspm_packages/
 **/bower_components/
+**/.pnp/
+**/.pnp.js
 
-# Debug files
-**/.debug
-**/*.debug
-**/*.log 
+# Miscellaneous
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.bak
+*.tmp
+*~
+.terraform/
+*.tfstate
+*.tfstate.*
+.vagrant/
+.serverless/
+.vercel/
+.netlify/ 

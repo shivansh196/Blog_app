@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: ./services/database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: always
+
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - postgres
+    networks:
+      - backend
+    restart: always
+
+  blog-service:
+    build:
+      context: ./services/blog-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - postgres
+      - user-service
+    networks:
+      - backend
+    restart: always
+
+  comment-service:
+    build:
+      context: ./services/comment-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - postgres
+      - user-service
+      - blog-service
+    networks:
+      - backend
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - user-service
+      - blog-service
+      - comment-service
+    networks:
+      - backend
+    restart: always
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
