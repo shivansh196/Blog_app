@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: ./services/database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: blogadmin
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: blog_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
