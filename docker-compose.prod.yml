@@ -25,6 +25,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3002:3002"
     depends_on:
       - postgres
     networks:
@@ -40,6 +42,8 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+    ports:
+      - "3003:3003"
     depends_on:
       - postgres
       - user-service
@@ -56,6 +60,8 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+    ports:
+      - "3004:3004"
     depends_on:
       - postgres
       - user-service
