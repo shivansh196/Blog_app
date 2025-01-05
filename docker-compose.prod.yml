@@ -13,7 +13,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - backend
-    restart: always
 
   user-service:
     build:
@@ -30,7 +29,6 @@ services:
       - postgres
     networks:
       - backend
-    restart: always
 
   blog-service:
     build:
@@ -47,7 +45,6 @@ services:
       - user-service
     networks:
       - backend
-    restart: always
 
   comment-service:
     build:
@@ -65,23 +62,6 @@ services:
       - blog-service
     networks:
       - backend
-    restart: always
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - user-service
-      - blog-service
-      - comment-service
-    networks:
-      - backend
-    restart: always
 
 networks:
   backend:

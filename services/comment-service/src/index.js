@@ -11,25 +11,19 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/comments', commentRoutes);
+// Routes - Note: no prefix as routes already include /comments
+app.use('/', commentRoutes);
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  res.status(200).json({ 
+    status: 'OK',
+    service: 'comment-service',
+    timestamp: new Date().toISOString()
   });
 });
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log(`Comment service running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
 });

@@ -9,8 +9,7 @@ CREATE TABLE user_service.users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Blog Service Schema
@@ -19,9 +18,7 @@ CREATE TABLE blog_service.posts (
     user_id INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    status VARCHAR(20) DEFAULT 'draft',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_service.users(id) ON DELETE CASCADE
 );
 
@@ -33,7 +30,6 @@ CREATE TABLE comment_service.comments (
     content TEXT NOT NULL,
     parent_id INTEGER,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_post FOREIGN KEY (post_id) REFERENCES blog_service.posts(id) ON DELETE CASCADE,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_service.users(id) ON DELETE CASCADE,
     CONSTRAINT fk_parent FOREIGN KEY (parent_id) REFERENCES comment_service.comments(id) ON DELETE CASCADE

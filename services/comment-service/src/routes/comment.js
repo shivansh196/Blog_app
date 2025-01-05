@@ -1,5 +1,5 @@
 const express = require('express');
-const { body, query } = require('express-validator');
+const { body } = require('express-validator');
 const { authenticateToken } = require('../middleware/auth');
 const {
   createComment,
@@ -11,24 +11,14 @@ const router = express.Router();
 
 // Validation middleware
 const commentValidation = [
-  body('post_id')
-    .isInt()
-    .withMessage('Post ID must be an integer'),
-  body('content')
-    .trim()
-    .notEmpty()
-    .withMessage('Content is required')
-    .isLength({ max: 1000 })
-    .withMessage('Comment must not exceed 1000 characters'),
-  body('parent_id')
-    .optional()
-    .isInt()
-    .withMessage('Parent ID must be an integer')
+  body('post_id').isInt(),
+  body('content').trim().notEmpty(),
+  body('parent_id').optional().isInt()
 ];
 
-// Routes
-router.post('/', authenticateToken, commentValidation, createComment);
-router.get('/', getComments);
-router.delete('/:id', authenticateToken, deleteComment);
+// Routes exactly as specified in requirements
+router.post('/comments', authenticateToken, commentValidation, createComment);
+router.get('/comments', getComments);
+router.delete('/comments/:id', authenticateToken, deleteComment);
 
 module.exports = router;

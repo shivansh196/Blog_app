@@ -11,25 +11,19 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/blogs', blogRoutes);
+// Routes - Note: no prefix as routes already include /blogs
+app.use('/', blogRoutes);
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  res.status(200).json({ 
+    status: 'OK',
+    service: 'blog-service',
+    timestamp: new Date().toISOString()
   });
 });
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`Blog service running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
 });

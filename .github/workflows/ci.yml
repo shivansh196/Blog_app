@@ -1,0 +1,77 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: blogadmin
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: blog_platform_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+        
+    - name: Install Dependencies
+      run: |
+        cd services/user-service && npm install
+        cd ../blog-service && npm install
+        cd ../comment-service && npm install
+        
+    - name: Run Tests
+      env:
+        DB_USER: blogadmin
+        DB_PASSWORD: test_password
+        DB_NAME: blog_platform_test
+        DB_HOST: localhost
+        JWT_SECRET: test_secret
+      run: |
+        cd services/user-service && npm test
+        cd ../blog-service && npm test
+        cd ../comment-service && npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        
+    - name: Deploy to EC2
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} '
+          cd blog-platform &&
+          git pull origin main &&
+          docker compose -f docker-compose.prod.yml up -d --build
+        ' 
